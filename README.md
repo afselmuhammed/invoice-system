@@ -1,61 +1,113 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel Invoice Generation System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This project is a high-performance invoice generation and delivery system built with Laravel. It supports bulk invoice generation (10,000+), real-time status updates, PDF generation, email delivery, job queuing, and dashboard monitoring.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## ✅ Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Bulk invoice generation with queue jobs
+- PDF generation and email sending using queues
+- Database transactions and retry logic
+- Realtime dashboard with status updates
+- Pagination support
+- View generated invoice PDFs
+- Logs, error handling, and memory-safe processing
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🛠️ Technologies Used
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- Laravel 12+
+- Laravel Queues (`queue:work`)
+- Mailables
+- Blade Templates
+- MySQL
+- Storage (PDFs)
+- Bootstrap/CSS for frontend
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 📦 Installation
 
-## Laravel Sponsors
+1. **Clone the repo**
+   ```bash
+   git clone https://github.com/your-repo/laravel-invoice-system.git
+   cd laravel-invoice-system
+Install dependencies
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+composer install
+npm install && npm run dev (optional)
 
-### Premium Partners
+Set up your .env
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+cp .env.example .env
+php artisan key:generate
 
-## Contributing
+Configure database
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    Update .env with your DB settings
 
-## Code of Conduct
+    Migrate and seed data:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+    php artisan migrate --seed
 
-## Security Vulnerabilities
+Link storage
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+    php artisan storage:link
 
-## License
+    Mail Configuration
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    Set MAIL_MAILER, MAIL_HOST, etc. in .env for sending emails
+
+ How to Run
+1. Start the Laravel Server
+
+php artisan serve
+
+2. Start the Queue Worker
+
+This is required for processing invoices.
+
+php artisan queue:work
+
+You may use --tries, --timeout, --memory, etc., for production environments.
+📋 How to Use
+Landing Page
+
+Go to http://127.0.0.1:8000/ to view the Invoice Dashboard.
+Dashboard Features:
+
+    View list of customers with:
+
+        Latest invoice number
+
+        Status: pending, sent, failed
+
+        View PDF link (if generated)
+
+🧪 Testing
+
+To test:
+
+    Ensure queue worker is running
+
+    Press Generate Invoices
+
+    Watch the status change and PDF links appear
+
+    Check storage/logs/laravel.log for failures
+
+📁 Folder Structure Overview
+
+app/
+ ├── Jobs/
+ │   ├── GenerateInvoicePdf.php
+ │   └── SendInvoiceEmailJob.php
+ ├── Services/
+ │   └── InvoiceGeneratorService.php
+resources/views/
+ └── invoices/
+     └── landing.blade.php
+routes/
+ └── web.php
