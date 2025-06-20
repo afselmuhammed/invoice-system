@@ -67,9 +67,9 @@ php artisan serve
 
 2. Start the Queue Worker
 
-This is required for processing invoices.
-php artisan optimize:clear 
-php artisan queue:work
+This is required for processing invoices. (Didnt Used Supervisor)
+`php artisan optimize:clear `
+`php artisan queue:work`
 
 You may use --tries, --timeout, --memory, etc., for production environments.
 📋 How to Use
