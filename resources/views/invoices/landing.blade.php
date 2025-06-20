@@ -13,6 +13,12 @@
             text-align: center;
         }
 
+        .message {
+            text-align: center;
+            color: green;
+            margin-top: 20px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -57,6 +63,22 @@
 <body>
     <h1>Invoice Dashboard</h1>
 
+    {{-- Flash Message --}}
+    @if (session('message'))
+    <div class="message">
+        {{ session('message') }}
+    </div>
+    @endif
+
+    {{-- Generate Invoices Form --}}
+    <div class="actions">
+        <form action="{{ route('invoices.generate') }}" method="POST">
+            @csrf
+            <button type="submit">Generate Invoices</button>
+        </form>
+    </div>
+
+    {{-- Invoices Table --}}
     <table>
         <thead>
             <tr>
@@ -67,7 +89,7 @@
                 <th>PDF</th>
             </tr>
         </thead>
-        <tbody id="invoice-table">
+        <tbody>
             @foreach ($customers as $customer)
             @php $invoice = $customer->latestInvoice; @endphp
             <tr>
@@ -86,32 +108,6 @@
             @endforeach
         </tbody>
     </table>
-
-    <script>
-        function loadInvoices() {
-            fetch("{{ route('invoices.statuses') }}")
-                .then(res => res.json())
-                .then(response => {
-                    const table = document.getElementById('invoice-table');
-                    table.innerHTML = '';
-
-                    response.data.forEach(customer => {
-                        const invoice = customer.latest_invoice;
-                        const statusClass = invoice?.status || '';
-                        const row = `
-                            <tr>
-                                <td>${customer.name}</td>
-                                <td>${customer.email}</td>
-                                <td>${invoice?.invoice_number ?? '-'}</td>
-                                <td class="${statusClass}">${invoice?.status ?? 'N/A'}</td>
-                                <td>${invoice?.pdf_path ? `<a href="/storage/${invoice.pdf_path}" target="_blank">View PDF</a>` : '-'}</td>
-                            </tr>
-                        `;
-                        table.insertAdjacentHTML('beforeend', row);
-                    });
-                });
-        }
-    </script>
 </body>
 
 </html>

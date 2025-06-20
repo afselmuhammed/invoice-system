@@ -2,16 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\InvoiceBatchCompleted;
+use App\Jobs\DispatchInvoicesJob;
 use App\Jobs\GenerateAndSendInvoiceJob;
-use App\Jobs\GenerateInvoicePdf;
-use App\Jobs\SendInvoiceEmailJob;
 use App\Models\Customer;
-use App\Services\InvoiceGeneratorService;
-use Illuminate\Bus\Batch;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
 
 class InvoiceController extends Controller
@@ -28,26 +22,20 @@ class InvoiceController extends Controller
         return response()->json($customers);
     }
 
-    public function generateAll(Request $request): JsonResponse
+    public function generateAll()
     {
         if (!Customer::exists()) {
-            return response()->json(['message' => 'No customers found'], 400);
+            return redirect()->back()->with('message', 'No customers found.');
         }
 
-        $chunkSize = config('app.invoice_chunk_size', 100);
-
         try {
-            Customer::whereNotNull('email')
-                ->chunk($chunkSize, function ($customers) {
-                    foreach ($customers as $customer) {
-                        GenerateAndSendInvoiceJob::dispatch($customer);
-                    }
-                });
-
-            return response()->json(['message' => 'Invoice generation started']);
+            DispatchInvoicesJob::dispatch();
+            Log::info("DispatchInvoicesJob dispatched.");
+            session()->flash('message', 'Invoice generation has been started.');
+            return redirect()->back();
         } catch (\Exception $e) {
-            Log::error('Invoice generation failed: ' . $e->getMessage());
-            return response()->json(['message' => 'Failed to start invoice generation'], 500);
+            \Log::error('Invoice generation failed: ' . $e->getMessage());
+            return redirect()->back()->with('message', 'Failed to start invoice generation.');
         }
     }
 }
